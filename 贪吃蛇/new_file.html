@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>贪吃蛇</title>
+		<style>
+			#map {
+				width: 400px;
+				height: 400px;
+				border: 1px solid black;
+				margin-left: 500px;
+				margin: 10% auto;
+			}
+
+			.divMap {
+				width: 18px;
+				height: 18px;
+				margin: 1px;
+				background-color: aqua;
+				float: left;
+			}
+
+			.divSnake {
+				width: 18px;
+				height: 18px;
+				margin: 1px;
+				background-color: red;
+				float: left;
+			}
+
+			.divFood {
+				width: 18px;
+				height: 18px;
+				margin: 1px;
+				background-color: yellow;
+				float: left;
+				border-radius: 100px;
+			}
+
+			#button {
+				margin-left: 720px;
+				text-decoration: none;
+			}
+		</style>
+		<script>
+			var mapX = 20,
+				mapY = 20; //地图为20*20网格
+			var arrMap = new Array();
+			var snakeX = [1, 2, 3],
+				snakeY = [2, 2, 2]; //开始时蛇的位置
+			var foodX = 3,
+				foodY = 3;
+			var keyCode = 39; //蛇向右移动
+			function createMap() {
+				var map = document.getElementById("map");
+				for (y = 0; y < mapY; y++) {
+					arrMap[y] = new Array();
+					for (x = 0; x < mapX; x++) {
+						var div = document.createElement("div");
+						div.className = "divMap";
+						arrMap[y][x] = div; //将小格放入地图数组
+						map.appendChild(div); //生成地图
+					}
+				}
+			}
+
+			//创建蛇身 
+			function createSnake() {
+				var result; //判断是否需要重新生成食物
+				for (i = 0; i < snakeX.length; i++) {
+					arrMap[snakeY[i]][snakeX[i]].className = "divSnake";
+
+				}
+			}
+			//创建食物
+			function createFood() {
+				result = false;
+				do {
+					foodX = parseInt(Math.random() * mapX);
+					foodY = parseInt(Math.random() * mapY);
+					//判断食物出现位置
+					for (i = 0; i < snakeX.length; i++) {
+						if (snakeX[i] == foodX && snakeY[i] == foodY) {
+							result = true; //重叠了，需要从新生成一个食物
+							break;
+						}
+
+					}
+				} while (result);
+
+				arrMap[foodY][foodX].className = "divFood"
+			}
+
+			//清除蛇身
+			function claerSnake() {
+				for (i = 0; i < snakeX.length; i++) {
+					arrMap[snakeY[i]][snakeX[i]].className = "divMap";
+				}
+			}
+
+			function snakeMove() {
+				claerSnake();
+
+				for (i = 0; i < snakeX.length - 1; i++) {
+					snakeX[i] = snakeX[i + 1];
+					snakeY[i] = snakeY[i + 1];
+
+				}
+				//每次移动，蛇头增加1格，keyCode匹配键盘方向键
+				switch (keyCode) {
+					case 37: //向右
+						snakeX[snakeX.length - 1]--;
+						break;
+					case 38: //向上
+						snakeY[snakeY.length - 1]--;
+						break;
+					case 39: //向右
+						snakeX[snakeX.length - 1]++;
+						break;
+					case 40: //向上
+						snakeY[snakeY.length - 1]++;
+						break;
+				}
+
+				//吃掉食物
+				if (snakeX[snakeX.length - 1] == foodX && snakeY[snakeY.length - 1] == foodY) {
+					snakeX[snakeX.length] = snakeX[snakeX.length - 1];
+					snakeY[snakeY.length] = snakeY[snakeY.length - 1];
+					for (i = snakeX.length - 1; i > 0; i--) {
+						snakeX[i] = snakeX[i - 1];
+						snakeY[i] = snakeY[i - 1];
+					}
+					createFood(); //重新生成下一个食物
+				}
+				//撞到地图边框
+				if (snakeX[snakeX.length - 1] < 0 ||
+					snakeX[snakeX.length - 1] > mapX - 1 ||
+					snakeY[snakeY.length - 1] < 0 ||
+					snakeY[snakeY.length - 1] > mapY - 1) {
+					clearInterval(move); //停止移动
+					alert("游戏结束");
+					return;
+				}
+
+				createSnake();
+			}
+
+			function keyDown() {
+				var newKey = event.keyCode;
+				if (keyCode == 37 && newKey == 39 ||
+					keyCode == 39 && newKey == 37 ||
+					keyCode == 38 && newKey == 40 ||
+					keyCode == 40 && newKey == 38
+				) {
+					//禁止掉头
+					return;
+				} else if (newKey >= 37 && newKey <= 40) {
+					//用户按了某个方向键
+					keyCode = newKey;
+				} else {
+					//其他按键
+				}
+
+			}
+			window.onload = function() {
+				createMap();
+				createSnake();
+				createFood();
+				move = setInterval("snakeMove()", 200);
+				document.onkeydown = keyDown;
+			}
+		</script>
+	</head>
+	<body>
+		<div id="map"></div>
+		<h3><a href="javascript:location.reload();" id="button">点击重新开始</a></h3>
+	</body>
+</html>
