@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>天气查询</title>
+	</head>
+	<body>
+		<h1>城市天气预报查询</h1>
+		<input type="text" />
+		<button type="button" onclick="Text()">查询</button>
+		<div id="myDiv" style="width: 500px;"></div>
+		<script type="text/javascript">
+			function Text() {
+				var xmlhttp; //声明变量
+				//创建Ajax对象，并且对浏览器做适应
+				if (window.XMLHttpRequest) {
+					xmlhttp = new XMLHttpRequest();
+				} else {
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				xmlhttp.onreadystatechange = function() {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						document.getElementById("myDiv").innerHTML = xmlhttp.responseText;
+					}
+				}
+				xmlhttp.open("GET", "tj.txt", true);
+				xmlhttp.send();
+			}
+		</script>
+	</body>
+</html>
